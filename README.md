@@ -13,9 +13,13 @@ Bu proje, Sistem Analizi ve Tasarımı dersi kapsamında geliştirilmiş tam yı
 Proje, Modülerlik ve Separation of Concerns (Sorumlulukların Ayrılması) prensiplerine uygun olarak aşağıdaki gibi yapılandırılmıştır:
 
 ├── backend/
+
 │   ├── controllers/
-│   │   └── applicationController.js  # Veritabanı CRUD işlemleri
+
+│   │   └── applicationController.js   # Veritabanı CRUD işlemleri
+
 │   ├── models/
+
 │   │   └── database.js               # SQLite bağlantısı ve tablo şemaları
 │   ├── routes/
 │   │   └── applicationRoutes.js      # RESTful API yönlendirmeleri

@@ -10,18 +10,26 @@
       "url": "http://localhost:3000"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Giriş yaptıktan sonra aldığınız token'ı buraya yapıştırın."
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
   "paths": {
-    "/api/applications": {
-      "get": {
-        "summary": "Tüm başvuruları listeler",
-        "responses": {
-          "200": {
-            "description": "Başarılı"
-          }
-        }
-      },
+    "/api/auth/register": {
       "post": {
-        "summary": "Yeni başvuru ekler",
+        "summary": "Yeni kullanıcı kaydı oluşturur",
+        "security": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -29,45 +37,111 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "company_name": { "type": "string" },
-                  "position": { "type": "string" },
-                  "status": { "type": "string" },
-                  "application_date": { "type": "string" }
+                  "username": { "type": "string", "example": "ogrenci1" },
+                  "password": { "type": "string", "example": "sifre123" }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Kayıt Başarılı"
+          "201": { "description": "Kayıt Başarılı" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Kullanıcı girişi yapar ve yetkilendirme token'ı döndürür",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string", "example": "ogrenci1" },
+                  "password": { "type": "string", "example": "sifre123" }
+                }
+              }
+            }
           }
+        },
+        "responses": {
+          "200": { "description": "Giriş Başarılı" }
+        }
+      }
+    },
+    "/api/applications": {
+      "get": {
+        "summary": "Giriş yapan kullanıcının tüm başvurularını listeler",
+        "responses": {
+          "200": { "description": "Başarılı" },
+          "403": { "description": "Yetkisiz Erişim (Token eksik veya geçersiz)" }
+        }
+      },
+      "post": {
+        "summary": "Sisteme yeni bir başvuru ekler",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company_name": { "type": "string", "example": "Borusan" },
+                  "position": { "type": "string", "example": "Alpha Staj Programı" },
+                  "status": { "type": "string", "example": "Bekliyor" },
+                  "application_date": { "type": "string", "example": "2026-05-20" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Kayıt Başarılı" }
         }
       }
     },
     "/api/applications/{id}": {
       "put": {
-        "summary": "Mevcut başvuruyu günceller",
+        "summary": "Mevcut başvurunun durumunu günceller (Sadece 'status' alır)",
         "parameters": [
           {
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": { "type": "integer" },
+            "description": "Güncellenecek başvurunun ID'si"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string", "example": "Kabul" }
+                }
+              }
+            }
+          }
+        },
         "responses": {
-          "200": { "description": "Güncelleme Başarılı" }
+          "200": { "description": "Güncelleme Başarılı" },
+          "404": { "description": "Başvuru Bulunamadı" }
         }
       },
       "delete": {
-        "summary": "Başvuruyu siler",
+        "summary": "Belirtilen başvuruyu sistemden siler",
         "parameters": [
           {
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": { "type": "integer" },
+            "description": "Silinecek başvurunun ID'si"
           }
         ],
         "responses": {

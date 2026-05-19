@@ -13,16 +13,23 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Tabloları oluşturma
 db.serialize(() => {
-    // Ana Varlık: Başvurular Tablosu
+   db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT
+    )`);
+
+    // 2. Önce tabloyu oluştur, user_id'yi de burada tanımla
     db.run(`CREATE TABLE IF NOT EXISTS applications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         company_name TEXT NOT NULL,
         position TEXT NOT NULL,
         status TEXT DEFAULT 'Bekliyor',
-        application_date TEXT NOT NULL
+        application_date TEXT NOT NULL,
+        user_id INTEGER
     )`);
 
-    // İlişkili Varlık: Mülakat Aşamaları Tablosu
+    // 3. İlişkili varlık
     db.run(`CREATE TABLE IF NOT EXISTS stages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         application_id INTEGER,
@@ -32,7 +39,6 @@ db.serialize(() => {
         FOREIGN KEY(application_id) REFERENCES applications(id) ON DELETE CASCADE
     )`);
 
-    console.log('Veritabanı tabloları hazır.');
-});
+    console.log('Veritabanı tabloları hazır.');});
 
 module.exports = db;

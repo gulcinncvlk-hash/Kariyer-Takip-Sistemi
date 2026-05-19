@@ -1,0 +1,79 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kariyer Takip Sistemi API",
+    "version": "1.0.0",
+    "description": "Öğrenci iş ve staj başvurularını yönetmek için RESTful API dokümantasyonu."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/applications": {
+      "get": {
+        "summary": "Tüm başvuruları listeler",
+        "responses": {
+          "200": {
+            "description": "Başarılı"
+          }
+        }
+      },
+      "post": {
+        "summary": "Yeni başvuru ekler",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company_name": { "type": "string" },
+                  "position": { "type": "string" },
+                  "status": { "type": "string" },
+                  "application_date": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Kayıt Başarılı"
+          }
+        }
+      }
+    },
+    "/api/applications/{id}": {
+      "put": {
+        "summary": "Mevcut başvuruyu günceller",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Güncelleme Başarılı" }
+        }
+      },
+      "delete": {
+        "summary": "Başvuruyu siler",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Silme Başarılı" }
+        }
+      }
+    }
+  }
+}

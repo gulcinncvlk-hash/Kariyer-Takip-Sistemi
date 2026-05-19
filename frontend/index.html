@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kariyer ve Mülakat Takip Sistemi</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+        input, select, button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        .delete-btn { background-color: #dc3545; padding: 5px 10px; font-size: 14px; }
+        .delete-btn:hover { background-color: #c82333; }
+        #successRate { font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kariyer Takip Sistemi</h1>
+        
+        <h2>Yeni Başvuru Ekle</h2>
+        <form id="applicationForm">
+            <input type="text" id="companyName" placeholder="Şirket / Kurum Adı" required>
+            <input type="text" id="position" placeholder="Pozisyon / Program (Örn: Alpha Staj Programı)" required>
+            <select id="status">
+                <option value="Bekliyor">Bekliyor</option>
+                <option value="Kabul">Kabul</option>
+                <option value="Red">Red</option>
+            </select>
+            <input type="date" id="appDate" required>
+            <button type="submit">Sisteme Kaydet</button>
+        </form>
+
+        <h2>Başvurularım (Başarı Oranı: <span id="successRate">%0</span>)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Şirket</th>
+                    <th>Pozisyon</th>
+                    <th>Durum</th>
+                    <th>Tarih</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody id="applicationTableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+name: Kariyer Takip CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repoyu Klonla
+      uses: actions/checkout@v3
+
+    - name: Node.js Kurulumu
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: Paketleri Yükle
+      run: npm install
+
+    - name: Linter Kontrolü (ESLint)
+      run: npm run lint
+
+    - name: Unit Testleri Çalıştır (Jest)
+      run: npm test

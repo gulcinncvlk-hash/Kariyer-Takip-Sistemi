@@ -9,31 +9,6 @@ Bu proje, Sistem Analizi ve Tasarımı dersi kapsamında geliştirilmiş tam yı
 * *Veritabanı:* SQLite3
 * *Test:* Jest
 * *API Dokümantasyon:* Swagger UI
-## Klasör Yapısı (Mimari)
-Proje, Modülerlik ve Separation of Concerns (Sorumlulukların Ayrılması) prensiplerine uygun olarak aşağıdaki gibi yapılandırılmıştır:
-
-├── backend/
-
-│   ├── controllers/
-
-│   │   └── applicationController.js   # Veritabanı CRUD işlemleri
-
-│   ├── models/
-
-│   │   └── database.js               # SQLite bağlantısı ve tablo şemaları
-│   ├── routes/
-│   │   └── applicationRoutes.js      # RESTful API yönlendirmeleri
-│   ├── services/
-│   │   ├── applicationLogic.js       # İzole edilmiş iş mantığı (Business Logic)
-│   │   └── applicationLogic.test.js  # İş mantığı için Jest birim testleri
-│   ├── server.js                     # Ana sunucu ve middleware konfigürasyonları
-│   └── swagger.json                  # OpenAPI/Swagger dokümantasyon şeması
-├── frontend/
-│   ├── app.js                        # Vanilla JS ile asenkron API iletişimi (fetch)
-│   └── index.html                    # Kullanıcı arayüzü
-├── .gitignore                        # Git tarafından takip edilmeyecek dosyalar
-├── package.json                      # Proje bağımlılıkları ve scriptler
-└── README.md
 
 ## Sistem Kurulumu ve Çalıştırılması
 Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin:

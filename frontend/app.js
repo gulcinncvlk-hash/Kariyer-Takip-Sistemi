@@ -8,13 +8,15 @@ const AUTH_URL = 'http://localhost:3000/api/auth';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Sayfa yüklendiğinde token var mı diye bak
-     const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const authSection = document.getElementById('auth-section');
     const logoutBtn = document.getElementById('logout-btn');
+    const dashboardSection = document.getElementById('dashboard-section'); // YENİ: Paneli tanımladık
 
     if (token) {
         // Giriş yapılmışsa
         if (authSection) authSection.style.display = 'none';
+        if (dashboardSection) dashboardSection.style.display = 'block'; // YENİ: Tam 18. satıra paneli açma komutunu koyduk
         if (logoutBtn) logoutBtn.style.display = 'inline-block'; // Butonu görünür yap
         fetchApplications();
     }
@@ -158,37 +160,37 @@ async function register() {
     alert(data.message || data.error);
 }
 function updateUIAfterLogin(username) {
-    // 1. Giriş/Kayıt alanını gizle
-    document.getElementById('auth-section').style.display = 'none';
+    // Giriş formunu gizle
+    const authSection = document.getElementById('auth-section');
+    if (authSection) authSection.style.display = 'none';
     
-    // 2. Kullanıcıya "Hoş geldin" mesajı ekle (Kullanıcı adını ekrana bas)
-    const welcomeMsg = document.createElement('h3');
-    welcomeMsg.innerText = "Hoş geldin, " + username + "!";
-    welcomeMsg.style.color = "green";
+    // Panel kutusunu (Dashboard) göster
+    const dashboard = document.getElementById('dashboard-section');
+    if (dashboard) dashboard.style.display = 'block'; 
     
-    // 3. Mesajı "Kariyer Takip Sistemi" başlığının hemen altına koy
-    const title = document.querySelector('h1') || document.querySelector('h2') || document.querySelector('h3');
-    title.parentNode.insertBefore(welcomeMsg, title.nextSibling);
+    // Çıkış butonunu göster
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
 }
 // YENİLENMİŞ LOGOUT FONKSİYONU (Bunu eski logout'un yerine yapıştır)
 function logout() {
-    // 1. Token'ı sil
     sessionStorage.removeItem('token');
     
-    // 2. Sayfayı YENİLEMEDEN (SPA Kuralı) arayüzü eski haline getir
-    document.getElementById('auth-section').style.display = 'block'; // Giriş formunu göster
-    document.getElementById('logout-btn').style.display = 'none'; // Çıkış butonunu gizle
+    // Giriş formunu tekrar göster
+    const authSection = document.getElementById('auth-section');
+    if (authSection) authSection.style.display = 'block';
     
-    // Varsa "Hoş geldin" yazısını sil
+    // Panel kutusunu (Dashboard) tekrar gizle
+    const dashboard = document.getElementById('dashboard-section');
+    if (dashboard) dashboard.style.display = 'none';
+    
+    // Çıkış butonunu gizle
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    
+    // Hoş geldin yazısını temizle (eğer varsa)
     const welcomeMsg = document.querySelector('h3[style="color: green;"]');
     if (welcomeMsg) welcomeMsg.remove();
-
-    // 3. Tabloyu temizle ve "Boş Durum" (Empty State) mesajı göster
-    const tbody = document.getElementById('applicationTableBody');
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #777;">Henüz giriş yapmadınız veya sisteme kayıtlı bir başvurunuz bulunmuyor.</td></tr>';
-    
-    // Başarı oranını sıfırla
-    document.getElementById('successRate').innerText = "%0";
 }
 async function updateStatus(id, newStatus) {
     const token = sessionStorage.getItem('token');

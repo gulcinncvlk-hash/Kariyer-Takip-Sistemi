@@ -1,37 +1,86 @@
-// frontend/app.js
-
 const API_URL = 'http://localhost:3000/api/applications';
 const AUTH_URL = 'http://localhost:3000/api/auth';
 
-// Sayfa yüklendiğinde başvuruları getir
-// app.js dosyasındaki DOMContentLoaded kısmını şu şekilde güncelle:
+// --- DOĞRULAMA (VALIDATION) YARDIMCI FONKSİYONLARI ---
+function showValidationError(inputId, message) {
+    clearValidationError(inputId); 
+    const inputElement = document.getElementById(inputId);
+    if (!inputElement) return;
 
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'validation-error';
+    errorDiv.style.color = '#dc3545'; 
+    errorDiv.style.fontSize = '13px';
+    errorDiv.style.marginTop = '4px';
+    errorDiv.style.fontWeight = 'bold';
+    errorDiv.innerText = message;
+    
+    inputElement.style.border = '2px solid #dc3545';
+    inputElement.parentNode.insertBefore(errorDiv, inputElement.nextSibling);
+}
+
+function clearValidationError(inputId) {
+    const inputElement = document.getElementById(inputId);
+    if (!inputElement) return;
+
+    inputElement.style.border = ''; 
+    const nextElement = inputElement.nextSibling;
+    if (nextElement && nextElement.className === 'validation-error') {
+        nextElement.remove();
+    }
+}
+
+function clearAllValidations() {
+    ['username', 'password', 'companyName', 'position'].forEach(id => {
+        clearValidationError(id);
+    });
+}
+// ------------------------------------------------------
+
+// Sayfa yüklendiğinde başvuruları getir
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Sayfa yüklendiğinde token var mı diye bak
     const token = sessionStorage.getItem('token');
     const authSection = document.getElementById('auth-section');
     const logoutBtn = document.getElementById('logout-btn');
-    const dashboardSection = document.getElementById('dashboard-section'); // YENİ: Paneli tanımladık
+    const dashboardSection = document.getElementById('dashboard-section'); 
 
     if (token) {
-        // Giriş yapılmışsa
         if (authSection) authSection.style.display = 'none';
-        if (dashboardSection) dashboardSection.style.display = 'block'; // YENİ: Tam 18. satıra paneli açma komutunu koyduk
-        if (logoutBtn) logoutBtn.style.display = 'inline-block'; // Butonu görünür yap
+        if (dashboardSection) dashboardSection.style.display = 'block'; 
+        if (logoutBtn) logoutBtn.style.display = 'inline-block'; 
         fetchApplications();
     }
 });
 
-
 // Form gönderildiğinde (Başvuru Ekleme - POST)
 document.getElementById('applicationForm').addEventListener('submit', async (e) => {
     e.preventDefault(); 
+    clearAllValidations(); // Eski hataları temizle
+
+    const companyName = document.getElementById('companyName').value.trim();
+    const position = document.getElementById('position').value.trim();
+    const status = document.getElementById('status').value;
+    const appDate = document.getElementById('appDate').value;
+
+    let isValid = true;
+
+    // Başvuru Formu Doğrulamaları
+    if (companyName.length < 2) {
+        showValidationError('companyName', 'Şirket / Kurum Adı en az 2 karakter olmalıdır.');
+        isValid = false;
+    }
+    if (position.length < 2) {
+        showValidationError('position', 'Pozisyon adı en az 2 karakter olmalıdır.');
+        isValid = false;
+    }
+
+    if (!isValid) return; // Hata varsa işlemi durdur
 
     const newApp = {
-        company_name: document.getElementById('companyName').value,
-        position: document.getElementById('position').value,
-        status: document.getElementById('status').value,
-        application_date: document.getElementById('appDate').value
+        company_name: companyName,
+        position: position,
+        status: status,
+        application_date: appDate
     };
 
     try {
@@ -64,7 +113,7 @@ async function fetchApplications() {
             headers: { 'Authorization': token }
         });
         
-        if (response.status === 403) {
+        if (response.status === 403 || response.status === 401) {
             console.log("Giriş yapmanız gerekiyor.");
             return;
         }
@@ -80,12 +129,10 @@ async function fetchApplications() {
             result.data.forEach(app => {
                 const tr = document.createElement('tr');
                 
-                // YENİ EKLENEN KISIM: Duruma göre renk belirliyoruz
-                let statusColor = "#f39c12"; // Varsayılan: Turuncu (Bekliyor)
-                if (app.status === "Kabul") statusColor = "#28a745"; // Yeşil
-                if (app.status === "Red") statusColor = "#dc3545"; // Kırmızı
+                let statusColor = "#f39c12"; 
+                if (app.status === "Kabul") statusColor = "#28a745"; 
+                if (app.status === "Red") statusColor = "#dc3545"; 
 
-                // Tablo satırını oluştururken statusColor değişkenini içeri aktarıyoruz
                 tr.innerHTML = '<td>' + app.company_name + '</td>' +
                '<td>' + app.position + '</td>' +
                '<td style="color: ' + statusColor + ';"><strong>' + app.status + '</strong></td>' +
@@ -126,10 +173,23 @@ async function deleteApplication(id) {
 
 // LOGIN ve REGISTER işlemleri
 async function login() {
-    const username = document.getElementById('username').value;
+    clearAllValidations();
+    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
+    let isValid = true;
 
-    // + işaretleri ile URL'yi birleştiriyoruz, ters tırnak derdi kalmıyor!
+    // Login Doğrulamaları
+    if (username.length < 3) {
+        showValidationError('username', 'Kullanıcı adı boş olamaz.');
+        isValid = false;
+    }
+    if (password.length === 0) {
+        showValidationError('password', 'Şifre boş bırakılamaz.');
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
     const res = await fetch(AUTH_URL + '/login', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -138,9 +198,9 @@ async function login() {
     const data = await res.json();
     if (data.token) {
         sessionStorage.setItem('token', data.token);
-        alert('Giriş başarılı!');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
         updateUIAfterLogin(username);
-        document.getElementById('logout-btn').style.display = 'inline-block';
         fetchApplications(); 
     } else {
         alert(data.error || 'Giriş başarısız!');
@@ -148,8 +208,23 @@ async function login() {
 }
 
 async function register() {
-    const username = document.getElementById('username').value;
+    clearAllValidations();
+    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
+    let isValid = true;
+
+    // Kayıt Doğrulamaları
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
+    if (username.length < 3 || !usernameRegex.test(username)) {
+        showValidationError('username', 'En az 3 karakter olmalı ve sadece harf/rakam içermelidir (boşluk yasaktır).');
+        isValid = false;
+    }
+    if (password.length < 6) {
+        showValidationError('password', 'Şifre en az 6 karakter olmalıdır.');
+        isValid = false;
+    }
+
+    if (!isValid) return;
 
     const res = await fetch(AUTH_URL + '/register', {
         method: 'POST',
@@ -157,46 +232,48 @@ async function register() {
         body: JSON.stringify({ username, password })
     });
     const data = await res.json();
-    alert(data.message || data.error);
+    
+    if (res.ok) {
+        alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    } else {
+        alert(data.error || 'Kayıt olurken bir hata oluştu.');
+    }
 }
+
 function updateUIAfterLogin(username) {
-    // Giriş formunu gizle
     const authSection = document.getElementById('auth-section');
     if (authSection) authSection.style.display = 'none';
     
-    // Panel kutusunu (Dashboard) göster
     const dashboard = document.getElementById('dashboard-section');
     if (dashboard) dashboard.style.display = 'block'; 
     
-    // Çıkış butonunu göster
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) logoutBtn.style.display = 'inline-block';
 }
-// YENİLENMİŞ LOGOUT FONKSİYONU (Bunu eski logout'un yerine yapıştır)
+
 function logout() {
     sessionStorage.removeItem('token');
     
-    // Giriş formunu tekrar göster
     const authSection = document.getElementById('auth-section');
     if (authSection) authSection.style.display = 'block';
     
-    // Panel kutusunu (Dashboard) tekrar gizle
     const dashboard = document.getElementById('dashboard-section');
     if (dashboard) dashboard.style.display = 'none';
     
-    // Çıkış butonunu gizle
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) logoutBtn.style.display = 'none';
     
-    // Hoş geldin yazısını temizle (eğer varsa)
     const welcomeMsg = document.querySelector('h3[style="color: green;"]');
     if (welcomeMsg) welcomeMsg.remove();
 }
+
 async function updateStatus(id, newStatus) {
     const token = sessionStorage.getItem('token');
     
     try {
-        const response = await fetch('http://localhost:3000/api/applications/' + id, {
+        const response = await fetch(API_URL + '/' + id, {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
@@ -205,13 +282,11 @@ async function updateStatus(id, newStatus) {
             body: JSON.stringify({ status: newStatus })
         });
 
-        const data = await response.json(); // Sunucudan gelen gerçek hatayı yakalayalım
+        const data = await response.json(); 
 
         if (response.ok) {
-            alert('Durum güncellendi!');
-            fetchApplications();
+            fetchApplications(); // Durum güncellenince alert kaldırdım, tabloyu sessizce yenileyecek
         } else {
-            // Hata mesajını konsola yazdır
             console.log("Sunucudan gelen hata:", data);
             alert('Hata: ' + (data.error || 'Güncellenemedi'));
         }
@@ -220,54 +295,43 @@ async function updateStatus(id, newStatus) {
         alert('Sunucuya ulaşılamadı.');
     }
 }
-// Arama (Filtreleme) Fonksiyonu
+
 function filterTable() {
-    // Arama kutusundaki metni al
     const input = document.getElementById("searchInput");
     const filter = input.value.toUpperCase();
-    
-    // Tabloyu ve satırları bul
     const tbody = document.getElementById("applicationTableBody");
     const tr = tbody.getElementsByTagName("tr");
 
-    // Tüm satırları dön, aranan kelimeyle eşleşmeyenleri gizle
     for (let i = 0; i < tr.length; i++) {
-        // 0. index 'Şirket' sütunudur
         const tdCompany = tr[i].getElementsByTagName("td")[0]; 
-        
         if (tdCompany) {
             const companyName = tdCompany.textContent || tdCompany.innerText;
-            // Eğer aranan harfler şirket adında varsa satırı göster, yoksa gizle
             if (companyName.toUpperCase().indexOf(filter) > -1) {
                 tr[i].style.display = "";
             } else {
-                tr[i].style.display = "none"; // Eşleşmiyorsa satırı sakla
+                tr[i].style.display = "none"; 
             }
         }       
     }
-}// Tarihe Göre Sıralama Fonksiyonu
-let dateSortAscending = false; // İlk tıklamada en yenileri üste alması için
+}
+
+let dateSortAscending = false; 
 
 function sortTableByDate() {
     const tbody = document.getElementById("applicationTableBody");
-    // Tablodaki tüm satırları bir diziye (array) çeviriyoruz
     const rows = Array.from(tbody.querySelectorAll("tr"));
 
     rows.sort((rowA, rowB) => {
-        // Tarih verisi 4. sütunda (index 3)
         const dateA = new Date(rowA.cells[3].innerText);
         const dateB = new Date(rowB.cells[3].innerText);
 
         if (dateSortAscending) {
-            return dateA - dateB; // Eskiden yeniye
+            return dateA - dateB; 
         } else {
-            return dateB - dateA; // Yeniden eskiye (En yeniler üstte)
+            return dateB - dateA; 
         }
     });
 
-    // Sıralama yönünü bir sonraki tıklama için tersine çevir
     dateSortAscending = !dateSortAscending;
-
-    // Sıralanmış satırları tabloya geri ekle (otomatik yer değiştirirler)
     rows.forEach(row => tbody.appendChild(row));
 }

@@ -45,7 +45,8 @@
           }
         },
         "responses": {
-          "201": { "description": "Kayıt Başarılı" }
+          "201": { "description": "Kayıt Başarılı" },
+          "400": { "description": "Doğrulama Hatası (Örn: Kısa şifre, boş alan) veya Kullanıcı Adı Alınmış" }
         }
       }
     },
@@ -68,7 +69,9 @@
           }
         },
         "responses": {
-          "200": { "description": "Giriş Başarılı" }
+          "200": { "description": "Giriş Başarılı" },
+          "400": { "description": "Doğrulama Hatası (Eksik bilgi)" },
+          "401": { "description": "Hatalı Giriş (Kullanıcı adı veya şifre yanlış)" }
         }
       }
     },
@@ -77,7 +80,8 @@
         "summary": "Giriş yapan kullanıcının tüm başvurularını listeler",
         "responses": {
           "200": { "description": "Başarılı" },
-          "403": { "description": "Yetkisiz Erişim (Token eksik veya geçersiz)" }
+          "401": { "description": "Yetkisiz Erişim (Token eksik veya geçersiz)" },
+          "500": { "description": "Sunucu Hatası" }
         }
       },
       "post": {
@@ -99,7 +103,9 @@
           }
         },
         "responses": {
-          "201": { "description": "Kayıt Başarılı" }
+          "201": { "description": "Kayıt Başarılı" },
+          "400": { "description": "Doğrulama Hatası (Eksik veya hatalı veri)" },
+          "401": { "description": "Yetkisiz Erişim" }
         }
       }
     },
@@ -130,7 +136,9 @@
         },
         "responses": {
           "200": { "description": "Güncelleme Başarılı" },
-          "404": { "description": "Başvuru Bulunamadı" }
+          "400": { "description": "Geçersiz Başvuru Durumu" },
+          "401": { "description": "Yetkisiz Erişim" },
+          "500": { "description": "Sunucu Hatası" }
         }
       },
       "delete": {
@@ -145,7 +153,9 @@
           }
         ],
         "responses": {
-          "200": { "description": "Silme Başarılı" }
+          "200": { "description": "Silme Başarılı" },
+          "401": { "description": "Yetkisiz Erişim" },
+          "500": { "description": "Sunucu Hatası" }
         }
       }
     }

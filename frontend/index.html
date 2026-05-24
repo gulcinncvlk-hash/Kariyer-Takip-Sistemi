@@ -23,46 +23,69 @@
 <body>
     <div class="container">
         <h1>Kariyer Takip Sistemi</h1>
+        
         <div id="auth-section">
-    <h3>Giriş Yap / Kayıt Ol</h3>
-    <input type="text" id="username" placeholder="Kullanıcı Adı">
-    <input type="password" id="password" placeholder="Şifre">
-    <button onclick="login()">Giriş Yap</button>
-    <button onclick="register()">Kayıt Ol</button>
-</div>
-        <button id="logout-btn" onclick="logout()" style="display: none;">Çıkış Yap</button>
-    <div id="dashboard-section" style="display: none;">
-        <form id="applicationForm">
-            <input type="text" id="companyName" placeholder="Şirket / Kurum Adı" required>
-            <input type="text" id="position" placeholder="Pozisyon / Program (Örn: Alpha Staj Programı)" required>
-            <select id="status">
-                <option value="Bekliyor">Bekliyor</option>
-                <option value="Kabul">Kabul</option>
-                <option value="Red">Red</option>
-            </select>
-            <input type="date" id="appDate" required>
-            <button type="submit">Sisteme Kaydet</button>
-        </form>
-
-        <h2>Başvurularım (Başarı Oranı: <span id="successRate">%0</span>)</h2>
-        <div style="margin-bottom: 15px;">
-            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Şirket adına göre ara..." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box;">
+            <h3>Giriş Yap / Kayıt Ol</h3>
+            <input type="text" id="username" placeholder="Kullanıcı Adı">
+            <input type="password" id="password" placeholder="Şifre">
+            <button onclick="login()">Giriş Yap</button>
+            <button onclick="register()">Kayıt Ol</button>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Şirket</th>
-                    <th>Pozisyon</th>
-                    <th>Durum</th>
-                    <th onclick="sortTableByDate()" style="cursor: pointer; text-decoration: underline;" title="Tarihe göre sıralamak için tıklayın">Tarih ↕️</th>
-                    <th>İşlem</th>
-                </tr>
-            </thead>
-            <tbody id="applicationTableBody">
+        
+        <button id="logout-btn" onclick="logout()" style="display: none; margin-bottom: 20px;">Çıkış Yap</button>
+        
+        <div id="dashboard-section" style="display: none;">
+            <form id="applicationForm">
+                <input type="text" id="companyName" placeholder="Şirket / Kurum Adı" required>
+                <input type="text" id="position" placeholder="Pozisyon / Program (Örn: Alpha Staj Programı)" required>
+                <select id="status">
+                    <option value="Bekliyor">Bekliyor</option>
+                    <option value="Kabul">Kabul</option>
+                    <option value="Red">Red</option>
+                </select>
+                <input type="date" id="appDate" required>
+                <button type="submit">Sisteme Kaydet</button>
+            </form>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 25px; margin-top: 10px;">
+                <div style="flex:1; background: #007bff; color: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin:0; font-weight: normal; font-size: 14px;">Toplam Başvuru</h4>
+                    <div id="stat-total" style="font-size: 24px; font-weight: bold; margin-top: 5px;">0</div>
+                </div>
+                <div style="flex:1; background: #f39c12; color: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin:0; font-weight: normal; font-size: 14px;">Bekleyen</h4>
+                    <div id="stat-pending" style="font-size: 24px; font-weight: bold; margin-top: 5px;">0</div>
+                </div>
+                <div style="flex:1; background: #28a745; color: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin:0; font-weight: normal; font-size: 14px;">Kabul Edilen</h4>
+                    <div id="stat-accepted" style="font-size: 24px; font-weight: bold; margin-top: 5px;">0</div>
+                </div>
+              <div style="flex:1; background: #dc3545; color: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h4 style="margin:0; font-weight: normal; font-size: 14px;">Red</h4>
+                <div id="stat-red" style="font-size: 24px; font-weight: bold; margin-top: 5px;">0</div>
+             </div>
+            </div>
+            <h2>Başvurularım (Başarı Oranı: <span id="successRate">%0</span>)</h2>
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Şirket adına göre ara..." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box;">
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Şirket</th>
+                        <th>Pozisyon</th>
+                        <th>Durum</th>
+                        <th onclick="sortTableByDate()" style="cursor: pointer; text-decoration: underline;" title="Tarihe göre sıralamak için tıklayın">Tarih ↕️</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationTableBody">
                 </tbody>
-        </table>
+            </table>
+        </div>
     </div>
-</div>
+    
     <script src="app.js"></script>
 </body>
 </html>

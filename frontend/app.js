@@ -37,6 +37,27 @@ function clearAllValidations() {
 }
 // ------------------------------------------------------
 
+// --- YENİ: İSTATİSTİK KARTLARINI GÜNCELLEYEN FONKSİYON ---
+function updateDashboardStats(data) {
+    if (!data) return;
+    const total = data.length;
+    const pending = data.filter(app => app.status === 'Bekliyor').length;
+    const accepted = data.filter(app => app.status === 'Kabul').length;
+    const rejected = data.filter(app => app.status === 'Red').length;
+
+    const totalEl = document.getElementById('stat-total');
+    const pendingEl = document.getElementById('stat-pending');
+    const acceptedEl = document.getElementById('stat-accepted');
+  const rejectedEl = document.getElementById('stat-red');
+
+    if (totalEl) totalEl.innerText = total;
+    if (pendingEl) pendingEl.innerText = pending;
+    if (acceptedEl) acceptedEl.innerText = accepted;
+    if (rejectedEl) rejectedEl.innerText = rejected; // YENİ: Sayıyı karta yazar
+
+}
+// ------------------------------------------------------
+
 // Sayfa yüklendiğinde başvuruları getir
 document.addEventListener('DOMContentLoaded', () => {
     const token = sessionStorage.getItem('token');
@@ -121,6 +142,11 @@ async function fetchApplications() {
         const result = await response.json();
         
         document.getElementById('successRate').innerText = result.success_rate || "%0";
+        
+        // YENİ: İstatistikleri güncelle
+        if (result.data) {
+            updateDashboardStats(result.data);
+        }
         
         const tbody = document.getElementById('applicationTableBody');
         tbody.innerHTML = '';
